@@ -18,13 +18,25 @@ workflow:
     Track HyperShift's development here: https://issues.redhat.com/projects/HOSTEDCP
   steps:
     pre:
-      - ref: ipi-install-rbac
-      - chain: hypershift-setup-nested-management-cluster
-      - ref: hypershift-install
-      - chain: hypershift-aws-create
-      - ref: optional-operators-operator-sdk
+    - ref: ipi-install-rbac
+    - chain: hypershift-setup-nested-management-cluster
+    - ref: hypershift-install
+    - chain: hypershift-aws-create
+    - as: prepare-aws-creds-on-hypershift
+      cli: latest
+      from: operator-sdk
+      resources:
+        requests:
+         cpu: 100m
+         memory: 200Mi
+      commands: |
+        echo "CLUSTER_PROFILE_DIR" && ls ${CLUSTER_PROFILE_DIR}
+        echo "SHARED_DIR" && ls ${SHARED_DIR}
+        
+        export KUBECONFIG=${SHARED_DIR}/nested_kubeconfig
+    - ref: optional-operators-operator-sdk
     post:
-      - chain: hypershift-dump
-      - chain: hypershift-aws-destroy
-      - chain: hypershift-destroy-nested-management-cluster
+    - chain: hypershift-dump
+    - chain: hypershift-aws-destroy
+    - chain: hypershift-destroy-nested-management-cluster
 

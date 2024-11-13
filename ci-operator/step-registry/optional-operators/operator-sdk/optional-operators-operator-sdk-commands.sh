@@ -20,6 +20,9 @@ echo "[$(date --utc +%FT%T.%3NZ)] OO_BUNDLE:            $OO_BUNDLE"
 echo "[$(date --utc +%FT%T.%3NZ)] OO_INSTALL_NAMESPACE: $OO_INSTALL_NAMESPACE"
 echo "[$(date --utc +%FT%T.%3NZ)] OO_INSTALL_MODE:      $OO_INSTALL_MODE"
 echo "[$(date --utc +%FT%T.%3NZ)] OO_SECURITY_CONTEXT:  $OO_SECURITY_CONTEXT"
+echo "[$(date --utc +%FT%T.%3NZ)] KUBECONFIG:  $KUBECONFIG"
+oc get nodes -o wide
+
 
 if [[ -f "${SHARED_DIR}/operator-install-namespace.txt" ]]; then
     OO_INSTALL_NAMESPACE=$(cat "$SHARED_DIR"/operator-install-namespace.txt)
@@ -54,6 +57,6 @@ fi
   cd /tmp
   operator-sdk run bundle "${OO_BUNDLE}" -n "${OO_INSTALL_NAMESPACE}" --verbose ${INSTALL_MODE_ARG} --timeout="${OO_INSTALL_TIMEOUT_MINUTES}m" --security-context-config="${OO_SECURITY_CONTEXT}"
 )
-
+oc get pods -n "${OO_INSTALL_NAMESPACE}"
 echo "[$(date --utc +%FT%T.%3NZ)] Script Completed Execution Successfully !"
 
